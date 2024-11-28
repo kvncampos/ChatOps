@@ -1,14 +1,14 @@
-version: "2"
 services:
   zookeeper:
-    image: wurstmeister/zookeeper
+    image: wurstmeister/zookeeper:latest
+    platform: linux/amd64
     ports:
       - "2181:2181"
     networks:
       - backend
 
   kafka:
-    image: wurstmeister/kafka:1.0.0
+    image: wurstmeister/kafka
     ports:
       - "9092:9092"
       - "1099:1099"
@@ -18,11 +18,12 @@ services:
       - KAFKA_ADVERTISED_PORT=9092
       - KAFKA_BROKER_ID=1
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper
-      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ADVERTISED_HOST_NAME=localhost
       - ZOOKEEPER_CONNECTION_TIMEOUT_MS=180000
       - KAFKA_CREATE_TOPICS=topic1:1:1,topic2:1:1
       - KAFKA_JMX_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=1099
       - JMX_PORT=1099
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
     networks:
       - backend
 
@@ -38,12 +39,12 @@ services:
       - HTTP_PORT=8080
       - JMX_EXPORTER_CONFIG_FILE=kafka.yml
     networks:
-        - backend
+      - backend
 
   prometheus:
     ports:
       - 9090:9090/tcp
-    image: prom/prometheus:v2.0.0
+    image: prom/prometheus:latest
     volumes:
       - ./etc:/etc/prometheus
       - prometheus_data:/prometheus
@@ -59,22 +60,36 @@ services:
       - 3000:3000
     links:
       - prometheus
+    depends_on:
+      - renderer
     environment:
-        GF_SECURITY_ADMIN_PASSWORD: "admin"
-        GF_USERS_ALLOW_SIGN_UP: "false"
-        GF_AUTH_ANONYMOUS_ENABLED: "true"
-        GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
-        GF_DASHBOARDS_JSON_ENABLED: "true"
-        GF_DASHBOARDS_JSON_PATH: /opt/grafana
-        GF_SERVER_ROOT_URL: http://localhost:3000/
-        GF_SERVER_ROUTER_LOGGING: "true"
-        GF_LOG_LEVEL: "debug"
-        GF_LOG_MODE: "console file"
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_DASHBOARDS_JSON_ENABLED: "true"
+      GF_DASHBOARDS_JSON_PATH: /opt/grafana/dashboards
+      GF_SERVER_ROOT_URL: http://localhost:3000/
+      GF_SERVER_ROUTER_LOGGING: "true"
+      GF_LOG_LEVEL: "debug"
+      GF_LOG_MODE: "console file"
+      GF_LOG_FILTERS: rendering:debug
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./etc:/opt/grafana
+      - ./etc:/opt/grafana/dashboards
+      - ./etc/provisioning:/etc/grafana/provisioning
+      - ./etc/grafana.ini:/etc/grafana/grafana.ini
     networks:
-        - backend
+      - backend
+
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
 
 volumes:
     prometheus_data: {}
@@ -82,3 +97,4 @@ volumes:
 
 networks:
   backend:
+    driver: bridge

@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: "Kafka Dashboards"
+    folder: ""
+    type: "file"
+    disableDeletion: false
+    editable: true
+    options:
+      path: /opt/grafana/dashboards
