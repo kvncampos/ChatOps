@@ -28,7 +28,7 @@ services:
       - backend
 
   kafka-jmx-exporter:
-    build: ./prometheus-jmx-exporter
+    build: ../chatops/prometheus-jmx-exporter
     ports:
       - "8080:8080"
     links:
@@ -46,7 +46,7 @@ services:
       - 9090:9090/tcp
     image: prom/prometheus:latest
     volumes:
-      - ./etc:/etc/prometheus
+      - ../chatops/etc:/etc/prometheus
       - prometheus_data:/prometheus
     links:
       - kafka-jmx-exporter
@@ -78,9 +78,9 @@ services:
       GF_LOG_FILTERS: rendering:debug
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./etc:/opt/grafana/dashboards
-      - ./etc/provisioning:/etc/grafana/provisioning
-      - ./etc/grafana.ini:/etc/grafana/grafana.ini
+      - ../chatops/etc:/opt/grafana/dashboards
+      - ../chatops/etc/provisioning:/etc/grafana/provisioning
+      - ../chatops/etc/grafana.ini:/etc/grafana/grafana.ini
     networks:
       - backend
 

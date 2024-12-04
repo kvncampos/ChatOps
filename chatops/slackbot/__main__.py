@@ -10,16 +10,17 @@ load_dotenv()
 # Initialize the Slack app
 app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
-DASHBOARD_SHORTCUTS = {"kafka": "de5aaxlrbrytcc"}
+DEFAULT_SERVER = os.getenv("ENVIRONMENT", "http://localhost:3000")
+DASHBOARD_SHORTCUTS = {"kafka": os.environ["KAFKA_DASHBOARD_NAME"]}
 
 # Predefined shortcuts for graphs
 GRAPH_SHORTCUTS = {
-    "kafka": "http://localhost:3000/d/de5aaxlrbrytcc/",
-    "prometheus": "http://localhost:3000/dashboard/file/Prometheus.json?orgId=1",
+    "kafka": f"http://{DEFAULT_SERVER}/d/{DASHBOARD_SHORTCUTS["kafka"]}/",
+    "prometheus": f"http://{DEFAULT_SERVER}/dashboard/file/Prometheus.json?orgId=1",
 }
 
-GRAFANA_RENDER_URL = os.getenv("GRAFANA_URL", "http://localhost:3000")
-GRAFANA_API_KEY = os.getenv("GRAFANA_API_KEY", "your-grafana-api-key")
+GRAFANA_RENDER_URL = os.getenv("GRAFANA_URL", DEFAULT_SERVER)
+GRAFANA_API_KEY = os.getenv("GRAFANA_API_KEY", "")
 
 
 # --- Feature 1: Respond to app mentions ---

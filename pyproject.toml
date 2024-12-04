@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "chatops"
+version = "0.1.0"
+description = "Simple ChatOps Project using Slack, Prometheus and Grafana"
+authors = ["kvncampos"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+docker = "^7.1.0"
+docopt = "^0.6.2"
+slack-bolt = "^1.21.2"
+python-dotenv = "^1.0.1"
+requests = "^2.32.3"
+invoke = "^2.2.0"
+ruff = "^0.8.1"
+black = "^24.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

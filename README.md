@@ -3,7 +3,7 @@
 A simple Slack chatops bot, further writeup [here](https://medium.com/@russell.luc/simple-chatops-with-kafka-grafana-prometheus-and-slack-764ece59e707).
 
 ## Prerequisites
-- Python 3.6+
+- Python 3.10+
 - [Docker](https://www.docker.com/)
 - [Kafkacat](https://github.com/edenhill/kafkacat)
 
@@ -43,7 +43,7 @@ View the Kafka dashboard at http://localhost:3000:
 ![Kafka dashboard](kafka.png)
 
 Request application metrics, e.g.:
- 
+
 
     @handy_bot help me!
     @handy_bot please show me the Kafka graphs
